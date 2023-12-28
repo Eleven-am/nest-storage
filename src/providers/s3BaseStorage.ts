@@ -17,7 +17,7 @@ export class S3BaseStorage extends BaseStorage {
     super(provider);
     this.storage = new S3({
       ...options,
-      region: 'auto',
+      region: options.region || 'auto',
       signatureVersion: 'v4',
     });
     this.bucket = options.bucket;
