@@ -55,3 +55,9 @@ export type DropboxStorageOption = {
     refreshToken: string;
   };
 };
+
+export interface AsyncStorageOptions {
+  isGlobal?: boolean;
+  inject?: any[];
+  useFactory: (...args: any[]) => Promise<StorageOption> | StorageOption;
+}

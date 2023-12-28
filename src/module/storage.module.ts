@@ -1,4 +1,4 @@
-import { StorageOption, Provider } from '../types/options';
+import { StorageOption, Provider, AsyncStorageOptions } from '../types/options';
 import { LocalStorage } from '../providers/localStorage';
 import { GDriveStorage } from '../providers/gDriveStorage';
 import { DropboxStorage } from '../providers/dropboxStorage';
@@ -43,8 +43,35 @@ export class StorageModule {
 
   static forRoot(options: StorageOption): DynamicModule {
     return {
+      global: true,
       module: StorageModule,
       ...this.createService(options),
+    };
+  }
+
+  static async forRootAsync(
+    options: AsyncStorageOptions,
+  ): Promise<DynamicModule> {
+    return {
+      global: options.isGlobal,
+      module: StorageModule,
+      ...this.createAsyncProviders(options),
+    };
+  }
+
+  private static createAsyncProviders(options: AsyncStorageOptions) {
+    const provider: NestProvider = {
+      provide: StorageService,
+      useFactory: async (...args: unknown[]) => {
+        const storageOption = await options.useFactory(...args);
+        return new StorageService(this.providerFactory(storageOption));
+      },
+      inject: options.inject || [],
+    };
+
+    return {
+      providers: [provider],
+      exports: [provider],
     };
   }
 }
