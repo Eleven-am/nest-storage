@@ -122,7 +122,7 @@ Returns the current storage provider name.
 
 ## Contributing
 
-Contributions are welcome! If you find any issues or have suggestions, feel free to open an [issue](https://github.com/your-repository/issues) or create a [pull request](https://github.com/your-repository/pulls).
+Contributions are welcome! If you find any issues or have suggestions, feel free to open an [issue](https://github.com/Eleven-am/nest-storage/issues) or create a [pull request](https://github.com/Eleven-am/nest-storage/pulls).
 
 ## License
 
