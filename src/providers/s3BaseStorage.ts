@@ -1,10 +1,10 @@
 import { BaseStorage } from './baseStorage';
-import * as aws from 'aws-sdk';
+import S3 from 'aws-sdk/clients/s3.js';
 import { Provider, S3Options } from '../types/options';
 import { IFile } from '../types/storage';
 
 export class S3BaseStorage extends BaseStorage {
-  private readonly storage: aws.S3;
+  private readonly storage: S3;
   private readonly bucket: string;
 
   constructor({
@@ -15,7 +15,11 @@ export class S3BaseStorage extends BaseStorage {
     options: S3Options;
   }) {
     super(provider);
-    this.storage = new aws.S3(options);
+    this.storage = new S3({
+      ...options,
+      region: 'auto',
+      signatureVersion: 'v4',
+    });
     this.bucket = options.bucket;
   }
 
@@ -145,7 +149,7 @@ export class S3BaseStorage extends BaseStorage {
 
   private parseFile(
     fileId: string,
-    data: aws.S3.Object | aws.S3.GetObjectOutput,
+    data: S3.Object | S3.GetObjectOutput,
   ): IFile {
     return {
       name: fileId,
