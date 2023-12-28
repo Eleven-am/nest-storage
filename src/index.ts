@@ -1,5 +1,11 @@
 import { StorageModule } from './module/storage.module';
-import { StorageOption, Provider } from './types/options';
+import { StorageOption, AsyncStorageOptions, Provider } from './types/options';
 import { StorageService } from './service/storage.service';
 
-export { StorageModule, StorageOption, StorageService, Provider };
+export {
+  StorageModule,
+  StorageOption,
+  StorageService,
+  Provider,
+  AsyncStorageOptions,
+};

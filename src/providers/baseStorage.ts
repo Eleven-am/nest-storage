@@ -20,6 +20,8 @@ export abstract class BaseStorage {
 
   abstract readFolder(folderId: string): Promise<IFile[]>;
 
+  abstract getSignedUrl(fileId: string, expires: number): Promise<string>;
+
   get storageProvider(): Provider {
     return this.provider;
   }

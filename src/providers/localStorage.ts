@@ -134,6 +134,12 @@ export class LocalStorage extends BaseStorage {
     });
   }
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  async getSignedUrl(fileId: string): Promise<string> {
+    throw new Error(`Cannot get signed url for ${fileId} in local storage`);
+  }
+
   private getFullPath(filePath: string) {
     return path.join(this.root, filePath);
   }

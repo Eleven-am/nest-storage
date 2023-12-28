@@ -123,6 +123,26 @@ export class S3BaseStorage extends BaseStorage {
     return this.moveFileOrFolder(fileId, newName);
   }
 
+  getSignedUrl(fileId: string, expires: number) {
+    return new Promise<string>((resolve, reject) => {
+      this.storage.getSignedUrl(
+        'getObject',
+        {
+          Bucket: this.bucket,
+          Key: fileId,
+          Expires: expires,
+        },
+        (err, url) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(url);
+          }
+        },
+      );
+    });
+  }
+
   private parseFile(
     fileId: string,
     data: aws.S3.Object | aws.S3.GetObjectOutput,

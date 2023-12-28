@@ -179,6 +179,31 @@ export class DropboxStorage extends BaseStorage {
     return this.moveFileOrFolder(fileId, newName);
   }
 
+  getSignedUrl(fileId: string) {
+    const params = {
+      path: 'https://api.dropboxapi.com/2/files/get_temporary_link',
+      query: {
+        path: fileId,
+      },
+    };
+
+    return new Promise<string>((resolve, reject) => {
+      this.makeRequest(
+        params,
+        z.object({
+          link: z.string(),
+          metadata: dropboxFileSchema,
+        }),
+      )
+        .then((data) => {
+          resolve(data.link);
+        })
+        .catch((error) => {
+          reject(error);
+        });
+    });
+  }
+
   private parseFile(file: DropBoxFile): IFile {
     return {
       name: file.name,

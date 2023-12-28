@@ -24,7 +24,6 @@ export type S3Options = {
   accessKeyId: string;
   secretAccessKey: string;
   endpoint: string;
-  region: string;
   bucket: string;
 };
 

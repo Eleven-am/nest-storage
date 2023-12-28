@@ -178,6 +178,19 @@ export class GDriveStorage extends BaseStorage {
     });
   }
 
+  getSignedUrl(fileId: string) {
+    return new Promise<string>((resolve, reject) => {
+      this.drive.files
+        .get({
+          fileId: fileId,
+          supportsAllDrives: true,
+          fields: 'id, name, size, parents, modifiedTime, mimeType',
+        })
+        .then((res) => resolve(res.data.webContentLink || ''))
+        .catch(reject);
+    });
+  }
+
   private parseFile(file: drive_v3.Schema$File): IFile {
     if (file.id === undefined) {
       throw new Error('File id is undefined');
