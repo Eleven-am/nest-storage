@@ -55,6 +55,7 @@ export class StorageModule {
     return {
       global: options.isGlobal,
       module: StorageModule,
+      imports: options.imports || [],
       ...this.createAsyncProviders(options),
     };
   }

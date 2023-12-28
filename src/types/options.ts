@@ -59,5 +59,6 @@ export type DropboxStorageOption = {
 export interface AsyncStorageOptions {
   isGlobal?: boolean;
   inject?: any[];
+  imports?: any[];
   useFactory: (...args: any[]) => Promise<StorageOption> | StorageOption;
 }
