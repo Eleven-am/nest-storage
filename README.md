@@ -50,9 +50,75 @@ export class YourService {
 - **Dropbox Storage:** `Provider.DROPBOX`
 - **Amazon S3 Storage:** `Provider.S3` and `Provider.R2`
 
-## Customization
+Certainly! Here's the same API section with reduced font size for the function names:
 
-The module supports multiple storage providers. You can extend it by implementing additional providers as needed. Refer to the [Nest.js documentation](https://docs.nestjs.com/) for more information on custom providers.
+## API Reference: `StorageService`
+
+#### `putFile(path: string, data: Buffer): Promise<void>`
+
+Uploads a file to the storage provider at the specified path.
+
+- **Parameters:**
+    - `path` (string): The destination path for the file.
+    - `data` (Buffer): The data to be stored.
+
+#### `getFileOrFolder(fileId: string): Promise<any>`
+
+Retrieves information about a file or folder from the storage provider.
+
+- **Parameters:**
+    - `fileId` (string): The identifier of the file or folder.
+
+#### `readFile(fileId: string): Promise<Buffer>`
+
+Reads the content of a file from the storage provider.
+
+- **Parameters:**
+    - `fileId` (string): The identifier of the file.
+
+#### `deleteFileOrFolder(fileId: string): Promise<void>`
+
+Deletes a file or folder from the storage provider.
+
+- **Parameters:**
+    - `fileId` (string): The identifier of the file or folder.
+
+#### `moveFileOrFolder(fileId: string, newPath: string): Promise<void>`
+
+Moves a file or folder to a new location within the storage provider.
+
+- **Parameters:**
+    - `fileId` (string): The identifier of the file or folder.
+    - `newPath` (string): The new path for the file or folder.
+
+#### `renameFileOrFolder(fileId: string, newName: string): Promise<void>`
+
+Renames a file or folder in the storage provider.
+
+- **Parameters:**
+    - `fileId` (string): The identifier of the file or folder.
+    - `newName` (string): The new name for the file or folder.
+
+#### `createFolder(path: string): Promise<void>`
+
+Creates a new folder in the storage provider.
+
+- **Parameters:**
+    - `path` (string): The path for the new folder.
+
+#### `readFolder(folderId: string): Promise<any[]>`
+
+Reads the contents of a folder from the storage provider.
+
+- **Parameters:**
+    - `folderId` (string): The identifier of the folder.
+
+#### `getProvider(): string`
+
+Returns the current storage provider name.
+
+- **Returns:**
+    - (string): The name of the storage provider (`LOCAL`, `GDRIVE`, `DROPBOX`, `S3`, or `R2`).
 
 ## Contributing
 
@@ -60,4 +126,4 @@ Contributions are welcome! If you find any issues or have suggestions, feel free
 
 ## License
 
-This project is licensed under the [MIT License](LICENSE).
+This project is licensed under the [GPL 3.0 License](LICENSE).
