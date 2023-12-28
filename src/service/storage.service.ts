@@ -38,6 +38,10 @@ export class StorageService {
     return this.storageProvider.readFolder(folderId);
   }
 
+  getSignedUrl(fileId: string, expires?: number) {
+    return this.storageProvider.getSignedUrl(fileId, expires);
+  }
+
   getProvider() {
     return this.storageProvider.storageProvider;
   }

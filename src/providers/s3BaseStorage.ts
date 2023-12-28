@@ -127,14 +127,14 @@ export class S3BaseStorage extends BaseStorage {
     return this.moveFileOrFolder(fileId, newName);
   }
 
-  getSignedUrl(fileId: string, expires: number) {
+  getSignedUrl(fileId: string, expires?: number) {
     return new Promise<string>((resolve, reject) => {
       this.storage.getSignedUrl(
         'getObject',
         {
           Bucket: this.bucket,
           Key: fileId,
-          Expires: expires,
+          Expires: expires || 60 * 60 * 24 * 7,
         },
         (err, url) => {
           if (err) {
