@@ -36,13 +36,13 @@ export class S3BaseStorage extends BaseStorage {
   }
 
   async deleteFileOrFolder(fileId: string) {
-    const data = await this.storage
+    await this.storage
       .deleteObject({
         Bucket: this.bucket,
         Key: fileId,
       })
       .promise();
-    return data.DeleteMarker || false;
+    return true;
   }
 
   async getFileOrFolder(fileId: string) {
