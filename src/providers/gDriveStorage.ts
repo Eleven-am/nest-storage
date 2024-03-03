@@ -1,7 +1,7 @@
 import { BaseStorage } from './baseStorage';
 import { drive_v3, google } from 'googleapis';
 import { GDriveStorageOption } from '../types/options';
-import { IFile } from '../types/storage';
+import { IFile, PartialStream } from '../types/storage';
 
 export class GDriveStorage extends BaseStorage {
   private readonly drive: drive_v3.Drive;
@@ -187,6 +187,37 @@ export class GDriveStorage extends BaseStorage {
           fields: 'id, name, size, parents, modifiedTime, mimeType',
         })
         .then((res) => resolve(res.data.webContentLink || ''))
+        .catch(reject);
+    });
+  }
+
+  streamFile(fileId: string, range: string) {
+    return new Promise<PartialStream>((resolve, reject) => {
+      this.getFileOrFolder(fileId)
+        .then((file) => this.buildRange(range, file))
+        .then((headers) => {
+          this.drive.files
+            .get(
+              {
+                fileId: fileId,
+                alt: 'media',
+                supportsAllDrives: true,
+              },
+              {
+                responseType: 'stream',
+                headers: {
+                  Range: `bytes=${headers.start}-${headers.end}`,
+                },
+              },
+            )
+            .then((res) => {
+              resolve({
+                stream: res.data,
+                headers,
+              });
+            })
+            .catch(reject);
+        })
         .catch(reject);
     });
   }

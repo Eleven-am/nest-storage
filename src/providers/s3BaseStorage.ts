@@ -147,6 +147,22 @@ export class S3BaseStorage extends BaseStorage {
     });
   }
 
+  async streamFile(fileId: string, range: string) {
+    const file = await this.getFileOrFolder(fileId);
+    const videoRes = this.buildRange(range, file);
+    const stream = this.storage
+      .getObject({
+        Bucket: this.bucket,
+        Key: fileId,
+        Range: `bytes=${videoRes.start}-${videoRes.end}`,
+      })
+      .createReadStream();
+    return {
+      stream,
+      headers: videoRes,
+    };
+  }
+
   private parseFile(
     fileId: string,
     data: aws.S3.Object | aws.S3.GetObjectOutput,

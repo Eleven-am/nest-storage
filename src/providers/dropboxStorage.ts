@@ -1,6 +1,6 @@
 import { BaseStorage } from './baseStorage';
 import * as Buffer from 'buffer';
-import { IFile } from '../types/storage';
+import { IFile, PartialStream } from '../types/storage';
 import { z } from 'zod';
 import { getMimeType } from '../lib/getMimetype';
 import { makeRequest } from '../lib/makeRequest';
@@ -197,6 +197,40 @@ export class DropboxStorage extends BaseStorage {
       )
         .then((data) => {
           resolve(data.link);
+        })
+        .catch((error) => {
+          reject(error);
+        });
+    });
+  }
+
+  async streamFile(fileId: string, range: string) {
+    const token = await this.authenticate();
+    const file = await this.getFileOrFolder(fileId);
+    const rangeData = this.buildRange(range, file);
+    const options = {
+      method: 'POST',
+      headers: {
+        authorization: `Bearer ${token.access_token}`,
+        'Dropbox-API-Arg': JSON.stringify({
+          path: fileId,
+        }),
+        'Content-Type': 'application/octet-stream',
+        Range: `bytes=${rangeData.start}-${rangeData.end}`,
+      },
+    };
+
+    return new Promise<PartialStream>((resolve, reject) => {
+      fetch('https://content.dropboxapi.com/2/files/download', options)
+        .then((response) => {
+          if (!response.ok) {
+            reject(response);
+          }
+
+          resolve({
+            stream: response.body as unknown as NodeJS.ReadableStream,
+            headers: rangeData,
+          });
         })
         .catch((error) => {
           reject(error);

@@ -2,7 +2,7 @@ import { BaseStorage } from './baseStorage';
 import { LocalStorageOption } from '../types/options';
 import * as path from 'path';
 import * as fs from 'fs';
-import { IFile } from '../types/storage';
+import { IFile, PartialStream } from '../types/storage';
 import { getMimeType } from '../lib/getMimetype';
 
 export class LocalStorage extends BaseStorage {
@@ -134,8 +134,26 @@ export class LocalStorage extends BaseStorage {
     });
   }
 
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
+  streamFile(fileId: string, range: string) {
+    return new Promise<PartialStream>((resolve, reject) => {
+      this.getFileOrFolder(fileId)
+        .then((file) => {
+          if (file.isFolder) {
+            reject(new Error('Cannot stream a folder'));
+          } else {
+            const fullPath = this.getFullPath(fileId);
+            const videoRes = this.buildRange(range, file);
+            const stream = fs.createReadStream(fullPath, {
+              start: videoRes.start,
+              end: videoRes.end,
+            });
+            resolve({ stream, headers: videoRes });
+          }
+        })
+        .catch(reject);
+    });
+  }
+
   async getSignedUrl(fileId: string): Promise<string> {
     throw new Error(`Cannot get signed url for ${fileId} in local storage`);
   }

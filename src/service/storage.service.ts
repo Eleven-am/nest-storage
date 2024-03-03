@@ -1,6 +1,11 @@
 import { Injectable } from '@nestjs/common';
 
 import { BaseStorage } from '../providers/baseStorage';
+import { Provider, StorageOption } from '../types/options';
+import { LocalStorage } from '../providers/localStorage';
+import { S3BaseStorage } from '../providers/s3BaseStorage';
+import { GDriveStorage } from '../providers/gDriveStorage';
+import { DropboxStorage } from '../providers/dropboxStorage';
 
 @Injectable()
 export class StorageService {
@@ -40,6 +45,33 @@ export class StorageService {
 
   getSignedUrl(fileId: string, expires?: number) {
     return this.storageProvider.getSignedUrl(fileId, expires);
+  }
+
+  streamFile(fileId: string, range: string) {
+    return this.storageProvider.streamFile(fileId, range);
+  }
+
+  createProvider(options: StorageOption) {
+    let provider: BaseStorage | null = null;
+    switch (options.provider) {
+      case Provider.LOCAL:
+        provider = new LocalStorage(options);
+        break;
+      case Provider.S3:
+      case Provider.R2:
+        provider = new S3BaseStorage(options);
+        break;
+      case Provider.GDRIVE:
+        provider = new GDriveStorage(options);
+        break;
+      case Provider.DROPBOX:
+        provider = new DropboxStorage(options);
+        break;
+      default:
+        throw new Error('Invalid storage provider');
+    }
+
+    return new StorageService(provider);
   }
 
   getProvider() {
