@@ -1,6 +1,6 @@
 {
   "name": "@eleven-am/nestjs-storage",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "author": "Roy OSSAI",
   "license": "GPL-3.0",
   "publishConfig": {
