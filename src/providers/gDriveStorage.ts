@@ -193,30 +193,30 @@ export class GDriveStorage extends BaseStorage {
 
   streamFile(fileId: string, range: string) {
     return new Promise<PartialStream>((resolve, reject) => {
-      this.getFileOrFolder(fileId)
-        .then((file) => this.buildRange(range, file))
-        .then((headers) => {
-          this.drive.files
-            .get(
-              {
-                fileId: fileId,
-                alt: 'media',
-                supportsAllDrives: true,
-              },
-              {
-                responseType: 'stream',
-                headers: {
-                  Range: `bytes=${headers.start}-${headers.end}`,
-                },
-              },
-            )
-            .then((res) => {
-              resolve({
-                stream: res.data,
-                headers,
-              });
-            })
-            .catch(reject);
+      this.drive.files
+        .get(
+          {
+            fileId: fileId,
+            alt: 'media',
+            supportsAllDrives: true,
+          },
+          {
+            responseType: 'stream',
+            headers: {
+              Range: range,
+            },
+          },
+        )
+        .then((res) => {
+          resolve({
+            stream: res.data,
+            headers: {
+              contentLength: res.headers['content-length'],
+              contentType: res.headers['content-type'],
+              contentRange: res.headers['content-range'],
+              contentDisposition: res.headers['content-disposition'],
+            },
+          });
         })
         .catch(reject);
     });

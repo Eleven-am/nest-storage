@@ -206,8 +206,6 @@ export class DropboxStorage extends BaseStorage {
 
   async streamFile(fileId: string, range: string) {
     const token = await this.authenticate();
-    const file = await this.getFileOrFolder(fileId);
-    const rangeData = this.buildRange(range, file);
     const options = {
       method: 'POST',
       headers: {
@@ -216,7 +214,7 @@ export class DropboxStorage extends BaseStorage {
           path: fileId,
         }),
         'Content-Type': 'application/octet-stream',
-        Range: `bytes=${rangeData.start}-${rangeData.end}`,
+        Range: range,
       },
     };
 
@@ -229,7 +227,13 @@ export class DropboxStorage extends BaseStorage {
 
           resolve({
             stream: response.body as unknown as NodeJS.ReadableStream,
-            headers: rangeData,
+            headers: {
+              contentType: response.headers.get('Content-Type') || '',
+              contentLength: response.headers.get('Content-Length') || '',
+              contentRange: response.headers.get('Content-Range') || '',
+              contentDisposition:
+                response.headers.get('Content-Disposition') || '',
+            },
           });
         })
         .catch((error) => {

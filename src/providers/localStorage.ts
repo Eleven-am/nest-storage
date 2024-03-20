@@ -142,12 +142,12 @@ export class LocalStorage extends BaseStorage {
             reject(new Error('Cannot stream a folder'));
           } else {
             const fullPath = this.getFullPath(fileId);
-            const videoRes = this.buildRange(range, file);
+            const { start, end, headers } = this.buildRange(range, file);
             const stream = fs.createReadStream(fullPath, {
-              start: videoRes.start,
-              end: videoRes.end,
+              start: start,
+              end: end,
             });
-            resolve({ stream, headers: videoRes });
+            resolve({ stream, headers: headers });
           }
         })
         .catch(reject);

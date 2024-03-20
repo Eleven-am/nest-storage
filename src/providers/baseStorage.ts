@@ -1,5 +1,5 @@
 import { Provider } from '../types/options';
-import { IFile, PartialStream } from '../types/storage';
+import { Header206, IFile, PartialStream } from '../types/storage';
 
 export abstract class BaseStorage {
   protected constructor(protected readonly provider: Provider) {}
@@ -29,22 +29,19 @@ export abstract class BaseStorage {
   abstract streamFile(fileId: string, range: string): Promise<PartialStream>;
 
   protected buildRange(range: string, file: IFile) {
-    const videoRes = {
-      mimeType: '',
-      fileSize: 0,
-      start: 0,
-      end: 0,
-      chunkSize: 0,
-    };
-
-    videoRes.mimeType = file.mimeType || '';
-    videoRes.fileSize = file.size;
     const parts = range.replace(/bytes=/, '').split('-');
 
-    videoRes.start = parseInt(parts[0], 10);
-    videoRes.end =
-      parseInt(parts[1]) > 0 ? parseInt(parts[1], 10) : videoRes.fileSize - 1;
-    videoRes.chunkSize = videoRes.end - videoRes.start + 1;
-    return videoRes;
+    const start = parseInt(parts[0], 10);
+    const end = parseInt(parts[1]) > 0 ? parseInt(parts[1], 10) : file.size - 1;
+    const chunkSize = end - start + 1;
+
+    const headers: Header206 = {
+      contentType: file.mimeType || '',
+      contentDisposition: 'attachment',
+      contentLength: chunkSize.toString(),
+      contentRange: `bytes ${start}-${end}/${file.size}`,
+    };
+
+    return { start, end, headers };
   }
 }

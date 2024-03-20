@@ -8,11 +8,10 @@ export interface IFile {
 }
 
 export interface Header206 {
-  chunkSize: number;
-  fileSize: number;
-  start: number;
-  end: number;
-  mimeType: string;
+  contentType: string;
+  contentLength: string;
+  contentRange: string;
+  contentDisposition: string;
 }
 
 export interface PartialStream {
