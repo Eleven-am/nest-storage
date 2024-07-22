@@ -15,13 +15,12 @@ export class LocalStorage extends BaseStorage {
   }
 
   createFolder(filePath: string) {
-    const newPath = this.getFullPath(filePath);
     return new Promise<IFile>((resolve, reject) => {
-      fs.mkdir(newPath, (err) => {
+      fs.mkdir(filePath, (err) => {
         if (err) {
           reject(err);
         } else {
-          this.getFileOrFolder(newPath).then(resolve).catch(reject);
+          this.getFileOrFolder(filePath).then(resolve).catch(reject);
         }
       });
     });
@@ -29,8 +28,7 @@ export class LocalStorage extends BaseStorage {
 
   deleteFileOrFolder(fileId: string) {
     return new Promise<boolean>((resolve, reject) => {
-      const fullPath = this.getFullPath(fileId);
-      fs.unlink(fullPath, (err) => {
+      fs.unlink(fileId, (err) => {
         if (err) {
           reject(err);
         } else {
@@ -42,18 +40,17 @@ export class LocalStorage extends BaseStorage {
 
   getFileOrFolder(filePath: string) {
     return new Promise<IFile>((resolve, reject) => {
-      const fullPath = this.getFullPath(filePath);
-      fs.stat(fullPath, (err, stats) => {
+      fs.stat(filePath, (err, stats) => {
         if (err) {
           reject(err);
         } else {
           resolve({
-            name: path.basename(fullPath),
-            path: filePath,
             size: stats.size,
-            mimeType: stats.isFile() ? getMimeType(fullPath) : null,
-            isFolder: stats.isDirectory(),
             modifiedAt: stats.mtime,
+            isFolder: stats.isDirectory(),
+            name: path.basename(filePath),
+            path: filePath,
+            mimeType: stats.isFile() ? getMimeType(filePath) : null,
           });
         }
       });
@@ -66,8 +63,7 @@ export class LocalStorage extends BaseStorage {
 
   putFile(path: string, data: Buffer) {
     return new Promise<IFile>((resolve, reject) => {
-      const fullPath = this.getFullPath(path);
-      fs.writeFile(fullPath, data, (err) => {
+      fs.writeFile(path, data, (err) => {
         if (err) {
           reject(err);
         } else {
@@ -84,8 +80,7 @@ export class LocalStorage extends BaseStorage {
           if (file.isFolder) {
             reject(new Error('Cannot read a folder'));
           } else {
-            const fullPath = this.getFullPath(fileId);
-            const stream = fs.createReadStream(fullPath);
+            const stream = fs.createReadStream(fileId);
             resolve(stream);
           }
         })
@@ -100,15 +95,16 @@ export class LocalStorage extends BaseStorage {
           if (!file.isFolder) {
             reject(new Error('Cannot read a file'));
           } else {
-            const fullPath = this.getFullPath(folderId);
-            fs.readdir(fullPath, (err, files) => {
+            fs.readdir(folderId, (err, files) => {
               if (err) {
                 reject(err);
               } else {
                 Promise.all(
-                  files.map((file) =>
-                    this.getFileOrFolder(path.join(folderId, file)),
-                  ),
+                  files
+                    .map((file) => path.join(folderId, file))
+                    .map((file) =>
+                      this.getFileOrFolder(path.join(folderId, file)),
+                    ),
                 )
                   .then(resolve)
                   .catch(reject);
@@ -122,9 +118,7 @@ export class LocalStorage extends BaseStorage {
 
   renameFileOrFolder(fileId: string, newName: string) {
     return new Promise<IFile>((resolve, reject) => {
-      const fullPath = this.getFullPath(fileId);
-      const newFullPath = this.getFullPath(newName);
-      fs.rename(fullPath, newFullPath, (err) => {
+      fs.rename(fileId, newName, (err) => {
         if (err) {
           reject(err);
         } else {
@@ -141,9 +135,8 @@ export class LocalStorage extends BaseStorage {
           if (file.isFolder) {
             reject(new Error('Cannot stream a folder'));
           } else {
-            const fullPath = this.getFullPath(fileId);
             const { start, end, headers } = this.buildRange(range, file);
-            const stream = fs.createReadStream(fullPath, {
+            const stream = fs.createReadStream(fileId, {
               start: start,
               end: end,
             });
@@ -156,9 +149,5 @@ export class LocalStorage extends BaseStorage {
 
   async getSignedUrl(fileId: string): Promise<string> {
     throw new Error(`Cannot get signed url for ${fileId} in local storage`);
-  }
-
-  private getFullPath(filePath: string) {
-    return path.join(this.root, filePath);
   }
 }
