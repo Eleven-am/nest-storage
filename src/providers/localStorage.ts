@@ -100,11 +100,9 @@ export class LocalStorage extends BaseStorage {
                 reject(err);
               } else {
                 Promise.all(
-                  files
-                    .map((file) => path.join(folderId, file))
-                    .map((file) =>
-                      this.getFileOrFolder(path.join(folderId, file)),
-                    ),
+                  files.map((file) =>
+                    this.getFileOrFolder(path.join(folderId, file)),
+                  ),
                 )
                   .then(resolve)
                   .catch(reject);
