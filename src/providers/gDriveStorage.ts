@@ -222,6 +222,10 @@ export class GDriveStorage extends BaseStorage {
     });
   }
 
+  readRootFolder() {
+    return this.readFolder('root');
+  }
+
   private parseFile(file: drive_v3.Schema$File): IFile {
     if (file.id === undefined) {
       throw new Error('File id is undefined');

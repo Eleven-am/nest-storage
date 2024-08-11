@@ -114,6 +114,10 @@ export class LocalStorage extends BaseStorage {
     });
   }
 
+  readRootFolder() {
+    return this.readFolder('/');
+  }
+
   renameFileOrFolder(fileId: string, newName: string) {
     return new Promise<IFile>((resolve, reject) => {
       fs.rename(fileId, newName, (err) => {

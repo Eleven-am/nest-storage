@@ -147,6 +147,10 @@ export class S3BaseStorage extends BaseStorage {
     });
   }
 
+  readRootFolder() {
+    return this.readFolder('');
+  }
+
   async streamFile(fileId: string, range: string) {
     const file = await this.getFileOrFolder(fileId);
     const { headers } = this.buildRange(range, file);

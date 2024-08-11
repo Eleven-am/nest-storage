@@ -1,5 +1,4 @@
 import { BaseStorage } from './baseStorage';
-import * as Buffer from 'buffer';
 import { IFile, PartialStream } from '../types/storage';
 import { z } from 'zod';
 import { getMimeType } from '../lib/getMimetype';
@@ -173,6 +172,10 @@ export class DropboxStorage extends BaseStorage {
 
     const data = await this.makeRequest(params, dropboxGetFilesResponseSchema);
     return data.entries.map((file) => this.parseFile(file));
+  }
+
+  readRootFolder(): Promise<IFile[]> {
+    return this.readFolder('');
   }
 
   renameFileOrFolder(fileId: string, newName: string) {

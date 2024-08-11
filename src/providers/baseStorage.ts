@@ -24,6 +24,8 @@ export abstract class BaseStorage {
 
   abstract readFolder(folderId: string): Promise<IFile[]>;
 
+  abstract readRootFolder(): Promise<IFile[]>;
+
   abstract getSignedUrl(fileId: string, expires?: number): Promise<string>;
 
   abstract streamFile(fileId: string, range: string): Promise<PartialStream>;
