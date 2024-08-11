@@ -122,7 +122,8 @@ export class DropboxStorage extends BaseStorage {
       const json = await response.json();
       const dropboxFile = dropboxFileSchema.parse(json);
       return this.parseFile(dropboxFile);
-    } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (e) {
       throw new Error('Failed to upload file to Dropbox');
     }
   }
