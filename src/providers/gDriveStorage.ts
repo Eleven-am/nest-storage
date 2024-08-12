@@ -235,13 +235,6 @@ export class GDriveStorage extends BaseStorage {
       throw new Error('File name is undefined');
     }
 
-    if (
-      file.size === undefined &&
-      file.mimeType !== 'application/vnd.google-apps.folder'
-    ) {
-      throw new Error('File size is undefined');
-    }
-
     return {
       name: file.name || '',
       path: file.id || '',
