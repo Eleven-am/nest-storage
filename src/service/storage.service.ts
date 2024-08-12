@@ -39,8 +39,10 @@ export class StorageService {
     return this.storageProvider.createFolder(path);
   }
 
-  readFolder(folderId: string) {
-    return this.storageProvider.readFolder(folderId);
+  readFolder(folderId?: string) {
+    return folderId
+      ? this.storageProvider.readFolder(folderId)
+      : this.storageProvider.readRootFolder();
   }
 
   getSignedUrl(fileId: string, expires?: number) {
