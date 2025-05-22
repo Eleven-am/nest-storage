@@ -6,6 +6,7 @@ import { LocalStorage } from '../providers/localStorage';
 import { S3BaseStorage } from '../providers/s3BaseStorage';
 import { GDriveStorage } from '../providers/gDriveStorage';
 import { DropboxStorage } from '../providers/dropboxStorage';
+import { IFile } from '../types/storage';
 
 @Injectable()
 export class StorageService {
@@ -43,6 +44,18 @@ export class StorageService {
     return folderId
       ? this.storageProvider.readFolder(folderId)
       : this.storageProvider.readRootFolder();
+  }
+
+  async readFolderRecursive(folderId: string) {
+    const folder = await this.storageProvider.readFolder(folderId);
+    const files = folder.filter((file) => !file.isFolder);
+    const folders = folder.filter((file) => file.isFolder);
+
+    const internalFiles = await Promise.all(
+      folders.map((folder) => this.readFolderRecursive(folder.path)),
+    );
+
+    return [...files, ...internalFiles.flat()] as IFile[];
   }
 
   getSignedUrl(fileId: string, expires?: number) {
