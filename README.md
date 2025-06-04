@@ -50,8 +50,6 @@ export class YourService {
 - **Dropbox Storage:** `Provider.DROPBOX`
 - **Amazon S3 Storage:** `Provider.S3` and `Provider.R2`
 
-Certainly! Here's the same API section with reduced font size for the function names:
-
 ## API Reference: `StorageService`
 
 #### `putFile(path: string, data: Buffer): Promise<void>`
